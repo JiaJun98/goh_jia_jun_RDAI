@@ -1,7 +1,6 @@
 ruff
 odfpy
 openpyxl
-celery==5.4.0
 fastapi==0.112.0
 langchain==0.2.12
 langchain-community==0.2.11
@@ -13,6 +12,8 @@ openai==1.40.3
 pandas==2.2.2
 pydantic==2.8.2
 pydantic_core==2.20.1
+gradio
+streamlit
 
 #From fileserver
 annotated-types==0.6.0
@@ -57,7 +58,6 @@ sqlmodel==0.0.21
 starlette==0.37.2
 typer==0.12.3
 typer-slim==0.12.3
-#typing_extensions==4.11.0
 uvicorn==0.20.0
 uvloop==0.19.0
 watchfiles==0.22.0
@@ -66,8 +66,8 @@ Werkzeug==3.0.3
 wheel==0.43.0
 redis
 aioredis
-#From fileserver
 
+#From fileserver
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-multipart==0.0.9
