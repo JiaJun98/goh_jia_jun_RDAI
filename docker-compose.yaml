@@ -1,8 +1,8 @@
 services:
-  umsf_app:
+  main_app:
     build:
       context: src
-      dockerfile: dockerfiles/umsf_app.Dockerfile
+      dockerfile: dockerfiles/main_app.Dockerfile
       args: 
         BUILD_ENV: ${ENVIRONMENT}
         LOG_LEVEL: ${LOG_LEVEL}
@@ -10,60 +10,16 @@ services:
       [
         "uvicorn",
         "--host=0.0.0.0",
-        "--log-config=app_base/config/uvicorn.json",
         "--port=${BATCH_TS_APP_PORT}",
-        "umsf_app.main:app",
+        "main_app.main:app",
       ]
     hostname: ${BATCH_TS_APP_HOSTNAME}
     profiles:
       - ""
       - all
       - batch_ts-dev
-    environment:
-      - APP_BASE_DB_URL=${APP_BASE_DB_URL}
-      - APP_BASE_DB_URL_ASYNC=${APP_BASE_DB_URL_ASYNC}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - LOG_DIAGNOSE=${LOG_DIAGNOSE}
-      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
-      - CELERY_BACKEND_URL=${CELERY_BACKEND_URL}
-      - FILESERVER_DOWNLOAD_URL=${FILESERVER_DOWNLOAD_URL}
-      - FILESERVER_UPLOAD_URL=${FILESERVER_UPLOAD_URL}
-      - BATCH_TS_UPLOAD_FOLDER=${BATCH_TS_UPLOAD_FOLDER}
     ports:
       - "${BATCH_TS_APP_PORT}:${BATCH_TS_APP_PORT}"
-    depends_on: 
-      postgres:
-        condition: service_healthy
-
-  redis:
-    image: "redis:alpine"
-    hostname: ${REDIS_HOSTNAME}
-    profiles:
-      - ""
-      - all
-      - batch_ts-dev
-    ports:
-      - "${REDIS_PORT}:6379"
-
-  postgres:
-    image: postgres:13
-    hostname: ${POSTGRES_HOSTNAME}
-    profiles:
-      - ""
-      - all
-      - batch_ts-dev
-      #- live_ts-dev
-      #- frontend-dev
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "${POSTGRES_PORT}:5432"
-    healthcheck: 
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"] 
-      timeout: 5s 
-      retries: 5
 
   ollama:
     build:
@@ -72,10 +28,10 @@ services:
     ports:
       - 11433:11434
     volumes:
-      - ./ollama_entrypoint.sh:/entrypoint.sh # For Linux docker compose
-      # - ./ollama_entrypoint_windows.sh:/entrypoint.sh # For Windows docker compose
-      # - ./src/models:/root/.ollama/models # Local models directory mounted inside the container; Comment when loading for non-internet access
-    container_name: ollama
+      #- ./ollama_entrypoint.sh:/entrypoint.sh # For Linux docker compose
+      - ./ollama_entrypoint_windows.sh:/entrypoint.sh # For Windows docker compose
+      - ./src/models:/root/.ollama/models # Local models directory mounted inside the container; Comment when loading for non-internet access
+    container_name: rdai_ollama
     pull_policy: always
     tty: true
     restart: always
@@ -88,25 +44,25 @@ services:
               count: 1 
               capabilities: [gpu]
 
-  nginx:
-    image: nginx:1.15-alpine
-    container_name: nginx
-    volumes:
-      - ./frontend/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - 80:8888
-    depends_on:
-      - ui
+  # nginx:
+  #   image: nginx:1.15-alpine
+  #   container_name: nginx
+  #   volumes:
+  #     - ./frontend/nginx.conf:/etc/nginx/nginx.conf
+  #   ports:
+  #     - 80:8888
+  #   depends_on:
+  #     - ui
 
-  ui:
-    build:
-      context: ./frontend/
-      dockerfile: Dockerfile
-    image: investigator-ui:1.1.0
-    container_name: investigator-ui
-    environment:
-      - VITE_API_ENDPOINT=${VITE_API_ENDPOINT}
-    ports:
-      - 5173:5173
-    command: npm run serve
+  # ui:
+  #   build:
+  #     context: ./frontend/
+  #     dockerfile: Dockerfile
+  #   image: investigator-ui:1.1.0
+  #   container_name: investigator-ui
+  #   environment:
+  #     - VITE_API_ENDPOINT=${VITE_API_ENDPOINT}
+  #   ports:
+  #     - 5173:5173
+  #   command: npm run serve
 

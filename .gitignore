@@ -2,6 +2,7 @@
 .DS_Store
 /Notebooks
 src/app_base
+src/models
 src/main_app/__pycache__
 src/main_app/processed_files
 src/main_app/umsf_example_data

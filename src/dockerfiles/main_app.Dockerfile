@@ -6,7 +6,7 @@ WORKDIR /src
 ENV PYTHONUNBUFFERED=1
 
 # Add requirements and install dependencies
-ADD ./umsf_app/requirements.txt ./
+ADD ./main_app/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Final Stage (Production)
@@ -42,8 +42,7 @@ ENV BUILD_ENV=${BUILD_ENV}
 ENV LOG_LEVEL=${LOG_LEVEL}
 
 # Add application code (ensure you use --chown to assign proper ownership)
-COPY --chown=appuser:appuser app_base /src/app_base
-COPY --chown=appuser:appuser umsf_app /src/umsf_app
+COPY --chown=appuser:appuser main_app /src/main_app
 
-# Run the main application (update this line with your entry point)
-CMD ["python", "app_base/config/create_external_config.py"]
+# # Run the main application (update this line with your entry point)
+# CMD ["python", "app_base/config/create_external_config.py"]
