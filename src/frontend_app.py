@@ -8,14 +8,12 @@ def upload_and_process():
     file = st.file_uploader("Upload Excel File", type=["xlsx", "xls"])
 
     if file is not None:
-        # Display the uploaded file name
-        st.write(f"Uploaded file: {file.name}")
-
-        # Send the file to the FastAPI backend
-        response = requests.post(
-            "http://localhost:8000/process-excel/",
-            files={"file": (file.name, file.getvalue(), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')}
-        )
+        with st.spinner("Processing your file... Please wait."):
+            # Send the file to FastAPI for processing
+            response = requests.post(
+                "http://main_app:8000/process-excel/",  # Replace with the correct FastAPI URL
+                files={"file": (file.name, file.getvalue(), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')}
+            )
 
         if response.status_code == 200:
             # Retrieve the processed file from the response

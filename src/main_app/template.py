@@ -5,14 +5,14 @@ from langchain.prompts.few_shot import FewShotPromptTemplate
 from langchain.document_loaders import Docx2txtLoader, TextLoader
 
 CURR_DIR = os.getcwd()
-trial_loan_report = Docx2txtLoader(os.path.join(CURR_DIR,"umsf_example_data/G202203272051 - trial loan_several UMLs.docx")).load()
-trial_loan_ans = TextLoader(os.path.join(CURR_DIR,"umsf_example_data/trial_loan_answer.txt")).load()
-enquire_force_loan_report = Docx2txtLoader(os.path.join(CURR_DIR,"umsf_example_data/G202307112064 - Enquire_given forced loan.docx")).load()
-enquire_force_loan_ans = TextLoader(os.path.join(CURR_DIR,"umsf_example_data/forced_loan_answer.txt")).load()
-refuse_full_payment_report = Docx2txtLoader(os.path.join(CURR_DIR,"umsf_example_data/L202307142070 - admit borrow_UML refused full payment.docx")).load()
-refuse_full_payment_ans = TextLoader(os.path.join(CURR_DIR,"umsf_example_data/payment_refused_answer.txt")).load()
-make_repayment_report = Docx2txtLoader(os.path.join(CURR_DIR,"umsf_example_data/G202307122049 - admit being a UML borrower.docx")).load()
-make_repayment_ans = TextLoader(os.path.join(CURR_DIR, "umsf_example_data/admit_borrower_answer.txt")).load()
+trial_loan_report = Docx2txtLoader(os.path.join(CURR_DIR,"main_app/umsf_example_data/G202203272051 - trial loan_several UMLs.docx")).load()
+trial_loan_ans = TextLoader(os.path.join(CURR_DIR,"main_app/umsf_example_data/trial_loan_answer.txt")).load()
+enquire_force_loan_report = Docx2txtLoader(os.path.join(CURR_DIR,"main_app/umsf_example_data/G202307112064 - Enquire_given forced loan.docx")).load()
+enquire_force_loan_ans = TextLoader(os.path.join(CURR_DIR,"main_app/umsf_example_data/forced_loan_answer.txt")).load()
+refuse_full_payment_report = Docx2txtLoader(os.path.join(CURR_DIR,"main_app/umsf_example_data/L202307142070 - admit borrow_UML refused full payment.docx")).load()
+refuse_full_payment_ans = TextLoader(os.path.join(CURR_DIR,"main_app/umsf_example_data/payment_refused_answer.txt")).load()
+make_repayment_report = Docx2txtLoader(os.path.join(CURR_DIR,"main_app/umsf_example_data/G202307122049 - admit being a UML borrower.docx")).load()
+make_repayment_ans = TextLoader(os.path.join(CURR_DIR, "main_app/umsf_example_data/admit_borrower_answer.txt")).load()
 
 
 examples = [

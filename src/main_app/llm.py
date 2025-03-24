@@ -7,7 +7,7 @@ from langchain_community.llms import Ollama
 from dotenv import load_dotenv
 
 # from main_app.template 
-from template import summ_few_shot_prompt_template, assessment_prompt_template
+from main_app.template import summ_few_shot_prompt_template, assessment_prompt_template
 
 #Need some data processing based on what the user wants...
 load_dotenv()
