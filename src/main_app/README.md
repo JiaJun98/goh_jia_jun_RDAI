@@ -1,5 +1,5 @@
 1. Change directory to this folder 
-    - cd src/umsf_app
+    - cd src/main_app
 2. Start your virtual environment
     - source venv/bin/activate
     - venv setup:

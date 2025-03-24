@@ -49,7 +49,7 @@ class OllamaAPIWrapper:
         except requests.exceptions.RequestException as e:
             raise RuntimeError(f"Error communicating with Ollama API: {e}")
 
-class UMSFCustomChain(LLMChain):
+class CustomChain(LLMChain):
     def __init__(self, llm):
         super().__init__(llm)
         
@@ -64,7 +64,7 @@ class UMSFCustomChain(LLMChain):
         assessment_chain = assessment_prompt | llm | StrOutputParser()
 
         # Combine chains into a custom chain
-        self.umsf_custom_chain = (
+        self.custom_chain = (
             {"summary": summary_chain}
             | RunnablePassthrough.assign(assessment=assessment_chain)
         )
@@ -73,11 +73,11 @@ class UMSFCustomChain(LLMChain):
         """
         Returns the constructed custom chain.
         """
-        return self.umsf_custom_chain
+        return self.custom_chain
 
 def create_chain(llm):
     """
-    Create a UMSF custom chain using the provided language model.
+    Create a custom chain using the provided language model.
 
     Args:
     - llm: A callable language model instance.
@@ -85,12 +85,12 @@ def create_chain(llm):
     Returns:
     - A combined summary and assessment chain.
     """
-    chain_instance = UMSFCustomChain(llm)
+    chain_instance = CustomChain(llm)
     return chain_instance.get_chain()
 
 def run(input_data, model="mistral:7b"):
     """
-    Executes the UMSFCustomChain and returns the summary and assessment.
+    Executes the CustomChain and returns the summary and assessment.
 
     Args:
     - input_data: The input data for the chain.
@@ -99,30 +99,29 @@ def run(input_data, model="mistral:7b"):
     Returns:
     - dict: A dictionary containing 'summary' and 'assessment'.
     """
-    print("\nCalling Ollama API via UMSFCustomChain\n")  # Replace with logging if needed
+    print("\nCalling Ollama API via CustomChain\n") 
     llm = OllamaAPIWrapper(model=model)  # Use the API wrapper as the LLM
     chain = create_chain(llm)
     results = chain.invoke(input_data)
-    print("Returning LLM result")  # Replace with logging if needed
+    print("Returning LLM result")  
     return results
 
-def final_assessment(sheet_name, llm_is_borrower_text):
+def final_assessment(sheet_name, llm_is_wronged_text):
     """
     Filters the text output of the LLM and returns Yes, No or Maybe
-    TODO: Change this
-    YES > MDW is UML borrower
-    NO > MDW is UML borrower. For MOM's action's action
+    YES > CATX has been wronged
+    NO > CATX is not wronged
 
     Args:
-        llm_is_borrower_text (str): text output of the row of "llm_is_borrower"
+        llm_is_wronged_text (str): text output of the row of "llm_is_wronged_text"
 
     Returns:
         string: "Yes", "No" or "Maybe"
     """
-    if "maybe" in llm_is_borrower_text.lower():
-        return " "
-    elif "yes" in llm_is_borrower_text.lower():
-        return sheet_name + " is a UML borrower. For MOM's action"
+    if "maybe" in llm_is_wronged_text.lower():
+        return "Not sure"
+    elif "yes" in llm_is_wronged_text.lower():
+        return sheet_name + " has been wronged"
     else:
-        return sheet_name + " is not a UML borrower"
+        return sheet_name + " has not been wronged"
 
