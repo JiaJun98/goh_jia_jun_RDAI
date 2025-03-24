@@ -3,12 +3,15 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_community.llms import Ollama
 import pandas as pd
+from datetime import datetime, date
 import os
 from io import BytesIO
 from uuid import uuid4
 from time import time
 from datetime import datetime
 import uvicorn
+
+from llm import run, final_assessment
 
 app = FastAPI(debug=True)
 llm = Ollama(model="mistral:7b")
@@ -59,13 +62,55 @@ async def process_excel(file: UploadFile = File(...)):
     sheet_names = pd.ExcelFile(excel_file).sheet_names
     print(sheet_names)
     processed_sheets = {}
+    start_time = datetime.now()
+    today = date.today()
+
+    # Calculate total rows across all sheets
+    total_rows = 0
+    for sheet_name in sheet_names:
+        df = pd.read_excel(excel_file, sheet_name=sheet_name) # Read the uploaded xlsx file into a pandas DataFrame
+        total_rows += len(df)
+    logging.info(f"Total rows to process: {total_rows}")
+
+    # Rewind the file for actual processing
+    excel_file.seek(0)
+    rows_processed = 0
+
+    def process_row(row):
+        """
+        Helper function to process a single row, applying all transformations.
+        Updates progress after processing the row.
+        """
+        nonlocal rows_processed
+        results = run(row, llm)
+        summary = results['summary'].strip()
+        assessment = results['assessment'].strip()
+        remarks = final_assessment(assessment)
+
+        rows_processed += 1
+        progress_percentage = min(int((rows_processed / total_rows) * 100), 100)
+        #job_status[task_id]["progress"] = progress_percentage
+        logging.debug(f"Progress updated to {progress_percentage}%")
+
+        return summary, remarks
 
     for sheet_name in sheet_names:
         df = pd.read_excel(excel_file, sheet_name=sheet_name)
-        if not df.empty:
-            # Example processing: Add a new column with modified data
-            df['Processed'] = df[df.columns[0]].apply(lambda x: f"Processed-{x}")
-            processed_sheets[sheet_name] = df
+        column_headers = pd.read_excel(excel_file, sheet_name=0, nrows=0).columns
+        df.columns = column_headers
+        df = df.rename(columns={"Breif Facts": "Event Facts Facts of Case"})
+        
+        # Apply the process_row function to each row
+        processed_data = df['Event Facts Facts of Case'].apply(process_row)
+        df['Brief Facts'], df['Remarks'] = zip(*processed_data)
+
+        processed_df = df.drop(columns=['Event Facts Facts of Case', 'Event Entry Log Incident Text'])
+        processed_sheets[sheet_name] = processed_df
+
+        #NOTE: Printer for time taken per row in one sheet
+        now = datetime.now()
+        logging.info(f"Time taken for sheet {sheet_name}: {(now - start_time)/len(df)}")
+
 
     # Save processed data to a file
     output_filename = f"processed_{datetime.now().strftime('%Y%m%d%H%M%S')}.xlsx"
