@@ -13,9 +13,6 @@ TODO:
 4) Install gradio with basic endpoint (DONE)
 5) Check if can call FASTAPI with gradio (DONE)
 6) Call gradio with the current implementation (Change to Streamlit)
-7) Remove the confidential document
-8) Add LLM (just use ollama) - dont use the confidential document
-9) Alter slightly, I am using Tabular data
-10) Alter Docker Compose... dunnid Postgres and Redis
-11) Probably need to check security or something....
-12) Alter Nginx and UI need to alter slighlty 
+7) Alter confidential document (PENDING)
+8) Check security in docker compose (PENDING)
+9) Tidy up README and submit
